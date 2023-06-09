@@ -12,8 +12,6 @@ namespace Portals
 
         private MeshRenderer MeshRenderer;
 
-        private Vector2Int LastScreenSize;
-
         private Camera MainCamera;
 
         public List<Light> Lights = new List<Light>();
@@ -22,8 +20,6 @@ namespace Portals
         private void Awake()
         {
             MeshRenderer = GetComponent<MeshRenderer>();
-
-            LastScreenSize = new Vector2Int(Screen.width, Screen.height);
 
             MainCamera = Camera.main;
         }
@@ -41,13 +37,18 @@ namespace Portals
                 UpdateCamera();
             }
             UpdateLights();
+        }
 
-            Vector2Int currentScreenSize = new Vector2Int(Screen.width, Screen.height);
-            if (LastScreenSize != currentScreenSize)
+        private void OnTriggerStay(Collider other)
+        {
+            if (transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position).z < 0)
             {
-                UpdateRenderTextureResolution(currentScreenSize);
+                Vector3 localPosition = transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position);
+                localPosition = new Vector3(-localPosition.x, localPosition.y, -localPosition.z);
+                other.transform.position = Partner.transform.localToWorldMatrix.MultiplyPoint3x4(localPosition);
+
+                other.transform.rotation = Partner.transform.rotation * Quaternion.Inverse(transform.rotation * Quaternion.Euler(0, 180, 0)) * other.transform.rotation;
             }
-            LastScreenSize = currentScreenSize;
         }
 
         public void CreateCamera()
@@ -58,7 +59,8 @@ namespace Portals
             }
 
             Partner.Camera = new GameObject(Partner.name + " Camera").AddComponent<Camera>();
-            Partner.Camera.targetTexture = new RenderTexture(LastScreenSize.x, LastScreenSize.y, 24);
+            Partner.Camera.transform.SetParent(Partner.transform);
+            Partner.Camera.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
             Partner.Camera.renderingPath = MainCamera.renderingPath;
             Partner.Camera.depth = MainCamera.depth;
             Partner.Camera.nearClipPlane = MainCamera.nearClipPlane;
@@ -70,6 +72,8 @@ namespace Portals
 
         public void UpdateCamera()
         {
+            Camera.clearFlags = MainCamera.clearFlags;
+            Camera.backgroundColor = MainCamera.backgroundColor;
             Camera.fieldOfView = MainCamera.fieldOfView;
 
             Vector3 relativePosition = transform.InverseTransformPoint(MainCamera.transform.position);
@@ -89,6 +93,7 @@ namespace Portals
                     {
                         LightsBeyondThePortal[i] = Instantiate(Lights[i].gameObject).GetComponent<Light>();
                         LightsBeyondThePortal[i].name = gameObject.name + " " + LightsBeyondThePortal[i].name;
+                        LightsBeyondThePortal[i].transform.SetParent(Partner.transform);
                     }
                     else
                     {
@@ -106,6 +111,14 @@ namespace Portals
                         LightsBeyondThePortal[i].intensity = Lights[i].intensity;
                         LightsBeyondThePortal[i].shadows = Lights[i].shadows;
 
+                        VolumetricLight volumetricLightOriginal = Lights[i].GetComponent<VolumetricLight>();
+                        VolumetricLight volumetricLightBeyondThePortal = LightsBeyondThePortal[i].GetComponent<VolumetricLight>();
+                        volumetricLightBeyondThePortal.enabled = volumetricLightOriginal.enabled;
+                        volumetricLightBeyondThePortal.MaxRayLength = volumetricLightOriginal.MaxRayLength;
+                        volumetricLightBeyondThePortal.ScatteringCoef = volumetricLightOriginal.ScatteringCoef;
+                        volumetricLightBeyondThePortal.ExtinctionCoef = volumetricLightOriginal.ExtinctionCoef;
+                        volumetricLightBeyondThePortal.SkyboxExtinctionCoef = volumetricLightOriginal.SkyboxExtinctionCoef;
+                        volumetricLightBeyondThePortal.MieG = volumetricLightOriginal.MieG;
                     }
                 }
                 else
@@ -115,12 +128,10 @@ namespace Portals
             }
         }
 
-        public void UpdateRenderTextureResolution(Vector2Int newResolution)
+        private void OnDrawGizmos()
         {
-            Partner.Camera.targetTexture.Release();
-            Partner.Camera.targetTexture.width = newResolution.x;
-            Partner.Camera.targetTexture.height = newResolution.y;
-            Partner.Camera.targetTexture.Create();
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, Partner.transform.position);
         }
     }
 }
