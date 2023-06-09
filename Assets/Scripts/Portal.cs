@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VolumetricLighting;
 
 namespace Portals
 {
@@ -60,6 +61,8 @@ namespace Portals
             Partner.Camera.targetTexture = new RenderTexture(LastScreenSize.x, LastScreenSize.y, 24);
             Partner.Camera.renderingPath = MainCamera.renderingPath;
             Partner.Camera.depth = MainCamera.depth;
+            Partner.Camera.nearClipPlane = MainCamera.nearClipPlane;
+            Partner.Camera.gameObject.AddComponent<VolumetricLightRenderer>();
 
             MeshRenderer.material = new Material(Shader.Find("Hidden/Portal"));
             MeshRenderer.material.mainTexture = Partner.Camera.targetTexture;
@@ -74,7 +77,6 @@ namespace Portals
             Camera.transform.position = Partner.transform.TransformPoint(relativePosition);
 
             Camera.transform.rotation = transform.rotation * Quaternion.Inverse(Partner.transform.rotation * Quaternion.Euler(0, 180, 0)) * MainCamera.transform.rotation;
-            //Camera.nearClipPlane = Vector3.Distance(transform.position, Camera.transform.position);
         }
 
         public void UpdateLights()
@@ -103,6 +105,7 @@ namespace Portals
                         LightsBeyondThePortal[i].color = Lights[i].color;
                         LightsBeyondThePortal[i].intensity = Lights[i].intensity;
                         LightsBeyondThePortal[i].shadows = Lights[i].shadows;
+
                     }
                 }
                 else
