@@ -41,7 +41,7 @@ namespace Portals
             {
                 UpdateCamera();
             }
-            UpdateLights();
+            UpdateCopiedLights();
             UpdateCopiedObjects();
 
             if (Input.GetKeyDown(KeyCode.F3))
@@ -93,7 +93,7 @@ namespace Portals
             Camera.transform.rotation = transform.rotation * Quaternion.Inverse(Partner.transform.rotation * Quaternion.Euler(0, 180, 0)) * MainCamera.transform.rotation;
         }
 
-        public void UpdateLights()
+        public void UpdateCopiedLights()
         {
             for (int i = 0; i < LightsToCopy.Count; i++)
             {
@@ -168,8 +168,8 @@ namespace Portals
                     }
                     else
                     {
-                        Vector3 lightPosition = transform.worldToLocalMatrix.MultiplyPoint3x4(ObjectsToCopy[i].transform.position);
-                        CopiedObjects[i].transform.localPosition = new Vector3(-lightPosition.x, lightPosition.y, -lightPosition.z);
+                        Vector3 objectPosition = transform.worldToLocalMatrix.MultiplyPoint3x4(ObjectsToCopy[i].transform.position);
+                        CopiedObjects[i].transform.localPosition = new Vector3(-objectPosition.x, objectPosition.y, -objectPosition.z);
 
                         CopiedObjects[i].transform.rotation = transform.rotation * Quaternion.Inverse(Partner.transform.rotation * Quaternion.Euler(0, 180, 0)) * ObjectsToCopy[i].transform.rotation;
 
