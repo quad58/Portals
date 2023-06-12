@@ -10,7 +10,7 @@ namespace Portals
         public Portal Partner;
         [HideInInspector] public Camera Camera;
 
-        public MeshRenderer MeshRenderer;
+        private MeshRenderer MeshRenderer;
 
         private Camera MainCamera;
 
@@ -28,6 +28,7 @@ namespace Portals
         private void Awake()
         {
             MainCamera = Camera.main;
+            MeshRenderer = GetComponentInChildren<MeshRenderer>();
         }
 
         private void Update()
@@ -53,14 +54,16 @@ namespace Portals
 
         private void OnTriggerStay(Collider other)
         {
-            if (transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position).z < 0)
+            if (transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position).z > -0.1)
             {
                 Vector3 localPosition = transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position);
                 localPosition = new Vector3(-localPosition.x, localPosition.y, -localPosition.z);
                 other.transform.position = Partner.transform.localToWorldMatrix.MultiplyPoint3x4(localPosition);
 
-                other.transform.rotation = Partner.transform.rotation * Quaternion.Inverse(transform.rotation * Quaternion.Euler(0, 180, 0)) * other.transform.rotation;
+                Quaternion difference = Partner.transform.rotation * Quaternion.Inverse(transform.rotation * Quaternion.Euler(0, 180, 0));
+                other.transform.rotation = difference * other.transform.rotation;
             }
+            Debug.Log(transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position).z);
         }
 
         public void CreateCamera()
