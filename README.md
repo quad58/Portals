@@ -1,2 +1,9 @@
 # Portals
- Portals in Unity Engine
+**Features:**
+- Portals.
+- Dynamic lighting through portals.
+- Dynamic shadows through portals.
+
+Todo:
+- Teleportation through portals.
+- Mirrors.
