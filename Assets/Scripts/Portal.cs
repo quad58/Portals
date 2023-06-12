@@ -51,18 +51,6 @@ namespace Portals
             }
         }
 
-        private void OnTriggerStay(Collider other)
-        {
-            if (transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position).z < 0)
-            {
-                Vector3 localPosition = transform.worldToLocalMatrix.MultiplyPoint3x4(other.transform.position);
-                localPosition = new Vector3(-localPosition.x, localPosition.y, -localPosition.z);
-                other.transform.position = Partner.transform.localToWorldMatrix.MultiplyPoint3x4(localPosition);
-
-                other.transform.rotation = Partner.transform.rotation * Quaternion.Inverse(transform.rotation * Quaternion.Euler(0, 180, 0)) * other.transform.rotation;
-            }
-        }
-
         public void CreateCamera()
         {
             if (Partner.Camera != null)
