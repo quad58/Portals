@@ -4,6 +4,7 @@ using VolumetricLighting;
 
 namespace Portals
 {
+    [DefaultExecutionOrder(100)]
     public class Portal : MonoBehaviour
     {
         public Portal Partner;

@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Portals.Demo
 {
+    [DefaultExecutionOrder(90)]
     public class CameraFly : MonoBehaviour
     {
         [SerializeField] private float Sensitivity = 8;
