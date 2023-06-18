@@ -19,11 +19,14 @@ namespace Portals.Demo
 
         private bool CursorUnlocked = false;
 
+        private Light Flashlight;
+
         private void Awake()
         {
             Camera = Camera.main;
             DefaultFiledOfView = Camera.fieldOfView;
             Cursor.lockState = CursorLockMode.Locked;
+            Flashlight = GetComponentInChildren<Light>();
         }
 
         private void Update()
@@ -80,6 +83,11 @@ namespace Portals.Demo
                     Cursor.lockState = CursorLockMode.None;
                     CursorUnlocked = true;
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                Flashlight.enabled = !Flashlight.enabled;
             }
         }
     }
