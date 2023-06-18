@@ -20,6 +20,7 @@ namespace Portals.Demo
         private bool CursorUnlocked = false;
 
         private Light Flashlight;
+        private bool FlashlightAttached = true;
 
         private void Awake()
         {
@@ -88,6 +89,21 @@ namespace Portals.Demo
             if (Input.GetKeyDown(KeyCode.F))
             {
                 Flashlight.enabled = !Flashlight.enabled;
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (FlashlightAttached)
+                {
+                    Flashlight.transform.SetParent(null);
+                    FlashlightAttached = false;
+                }
+                else
+                {
+                    Flashlight.transform.SetParent(this.transform);
+                    Flashlight.transform.localPosition = Vector3.zero;
+                    Flashlight.transform.localRotation = Quaternion.identity;
+                    FlashlightAttached = true;
+                }
             }
         }
     }
