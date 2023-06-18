@@ -10,7 +10,7 @@ namespace Portals
         public Portal Partner;
         [HideInInspector] public Camera Camera;
 
-        public MeshRenderer MeshRenderer;
+        private MeshRenderer MeshRenderer;
 
         private Camera MainCamera;
 
@@ -28,6 +28,7 @@ namespace Portals
         private void Awake()
         {
             MainCamera = Camera.main;
+            MeshRenderer = GetComponentInChildren<MeshRenderer>();
         }
 
         private void Update()
